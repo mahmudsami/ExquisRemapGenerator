@@ -1,5 +1,6 @@
 
 
+
 function rgbToHex(r, g, b) {
     r = r.toString(16);
     g = g.toString(16);
@@ -16,26 +17,17 @@ function rgbToHex(r, g, b) {
 }
 
 
-function rgbCommand(r, g, b, id) {
-    result = String.fromCharCode(0xF0, 0x00, 0x21, 0x7E, 0x03 , id, r, g, b, 0xF7);
-    return result;
-}
-
-function noteCommand(q, id) {
-    result = String.fromCharCode(0xF0, 0x00, 0x21, 0x7E, 0x04, id, q, 0xF7);
-    return result;
-}
 
 const container = document.createElement('div');
 container.classList.add('grid-container');
-r = [];
-g = [];
-b = [];
+r = new Array(61);
+g = new Array(61);
+b = new Array(61);
 q = [];
 for (let i = 0; i < 61; i++) {
-    r.push( i % 2 * 120);
-    g.push( i %5 * 40);
-    b.push( i %3 * 80);
+    r[i] = i * 4;
+    g[i] = i * 2;
+    b[i] = i * 1;
     q.push(i+32);
 }
 
@@ -99,41 +91,68 @@ buttonCounts.forEach(count => {
 });
 
 
+textField = document.createElement('input');
+textField.type = 'text';
+textField.id = 'textField';
+textField.style.width = '100%';
+
 
 const saveDiv = document.createElement('div');
 const generateButton = document.createElement('button');
 generateButton.textContent = 'Generate';
 generateButton.style.width = '100%';
 generateButton.addEventListener('click', () => {
-    let text = new Uint8Array(61 * 18);
-    for (let i = 0; i < 61; i++) {
+    let text = new Uint8Array(62 * 18);
+    text[0] = 0x00;
+    text[1] = 0x00;
+    text[2] = 0x00;
+    text[3] = 0xF0;
+    text[4] = 0x00;
+    text[5] = 0x21;
+    text[6] = 0x7E;
+    text[7] = 0x3F;
+    text[8] = 0xF0;
+    text[9] = 0x00;
+    text[10] = 0x21;
+    text[11] = 0x7E;
+    text[12] = 0x3F;
+    text[13] = 0xF0;
+    text[14] = 0x00;
+    text[15] = 0x21;
+    text[16] = 0x7E;
+    text[17] = 0x3F;
+
+    for (let i = 1; i < 62; i++) {
+        let rr = r[i - 1]/2;
+        let gg = g[i - 1]/2; 
+        let bb = b[i - 1]/2;
+        let key =  i - 1;
         text[i * 18] = 0xF0;
         text[i * 18 + 1] = 0x00;
         text[i * 18 + 2] = 0x21;
         text[i * 18 + 3] = 0x7E;
         text[i * 18 + 4] = 0x03;
-        text[i * 18 + 5] = i;
-        text[i * 18 + 6] = r[i];
-        text[i * 18 + 7] = g[i];
-        text[i * 18 + 8] = b[i];
+        text[i * 18 + 5] = key ;
+        text[i * 18 + 6] = rr;
+        text[i * 18 + 7] = gg;
+        text[i * 18 + 8] = bb;
         text[i * 18 + 9] = 0xF7;
         text[i * 18 + 10] = 0xF0; 
-        let noteValue = document.getElementById(i).querySelector('select').value;
+        let noteValue = document.getElementById(i- 1).querySelector('select').value;
         text[i * 18 + 11] = 0x00;
         text[i * 18 + 12] = 0x21;
         text[i * 18 + 13] = 0x7E;
         text[i * 18 + 14] = 0x04;
-        text[i * 18 + 15] = i;
+        text[i * 18 + 15] = key;
         text[i * 18 + 16] = noteValue;
         text[i * 18 + 17] = 0xF7;
     }
     data = new Blob([text], {type: 'application/octet-stream'});
     saveAs(data, 'data.syx');
-
+    
    
 });
 
 saveDiv.appendChild(generateButton);
 container.appendChild(saveDiv);
-container.appendChild(textField);
 document.body.appendChild(container);
