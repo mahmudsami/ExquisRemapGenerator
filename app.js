@@ -33,7 +33,7 @@ g = [];
 b = [];
 q = [];
 for (let i = 0; i < 61; i++) {
-    r.push( i %2 * 120);
+    r.push( i % 2 * 120);
     g.push( i %5 * 40);
     b.push( i %3 * 80);
     q.push(i+32);
@@ -64,13 +64,10 @@ buttonCounts.forEach(count => {
         colorPicker.value = rgbToHex(r[button.id], g[button.id], b[button.id]);
         colorPicker.addEventListener('input', () => {
                 button.style.backgroundColor = colorPicker.value;
-                const rgbValues = colorPicker.value.match(/\d+/g);
-                if (rgbValues.length === 3) {
-                    const [red, green, blue] = rgbValues;
-                    r[button.id] = parseInt(red);
-                    g[button.id] = parseInt(green);
-                    b[button.id] = parseInt(blue);
-                }
+                r[button.id] = parseInt(colorPicker.value.slice(1, 3), 16);
+                g[button.id] = parseInt(colorPicker.value.slice(3, 5), 16);
+                b[button.id] = parseInt(colorPicker.value.slice(5, 7), 16);
+
         });
         const dropdown = document.createElement('select');
         for (let i = 0; i <= 127; i++) {
@@ -132,10 +129,11 @@ generateButton.addEventListener('click', () => {
     }
     data = new Blob([text], {type: 'application/octet-stream'});
     saveAs(data, 'data.syx');
+
    
 });
 
 saveDiv.appendChild(generateButton);
 container.appendChild(saveDiv);
-
+container.appendChild(textField);
 document.body.appendChild(container);
