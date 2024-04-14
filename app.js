@@ -78,7 +78,7 @@ buttonCounts.forEach(count => {
         button.style.backgroundColor = `rgb(${r[button.id]}, ${g[button.id]}, ${b[button.id]})`;
         button.style.color = 'white';
         button.addEventListener('click', () => {
-            colorPicker.click();
+            //colorPicker.click();
         });
         frame.appendChild(button);
         frame.appendChild(document.createElement('a'));
